@@ -1,22 +1,26 @@
 package com.matburt.mobileorg;
 
-import android.app.Application;
-import java.util.ArrayList;
-import java.util.List;
 import java.io.File;
-import android.util.Log;
-import android.os.Environment;
-import android.content.Intent;
+import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Queue;
+import java.util.Timer;
+
+import android.app.Application;
 import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageItemInfo;
 import android.content.pm.ResolveInfo;
+import android.os.Environment;
+import android.util.Log;
 
 public class MobileOrgApplication extends Application {
     public Node rootNode = null;
     public ArrayList<Integer> nodeSelection;
     public ArrayList<EditNode> edits;
     public static final String SYNCHRONIZER_PLUGIN_ACTION = "com.matburt.mobileorg.SYNCHRONIZE";
-
+    private Queue<Timer> activeTimers = new LinkedList<Timer>();
     public void pushSelection(int selectedNode)
     {
         if (nodeSelection == null) {
@@ -28,6 +32,15 @@ public class MobileOrgApplication extends Application {
     public void popSelection()
     {
         nodeSelection.remove(nodeSelection.size()-1);        
+    }
+    
+    public void clearTimers() {
+    	while(!activeTimers.isEmpty()) {
+    		activeTimers.poll().cancel();
+    	}
+    }
+    public void addTimer(Timer t) {
+    	activeTimers.add(t);
     }
 
     public Node getSelectedNode()
